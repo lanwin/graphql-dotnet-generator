@@ -8,7 +8,7 @@ namespace Pokemon.GraphQL.ModelFragments
 {
   public interface IPokemonName
   {
-    String Name {get;}
+    String Name {get; set;}
   }
 }
 
@@ -16,47 +16,47 @@ namespace Pokemon.GraphQL.Model
 {
   public class Query
   {
-    public Pokemon1 Pokemon {get;}
+    public Pokemon1 Pokemon {get; set;}
   }
-  public abstract class Pokemon1 : global::Pokemon.GraphQL.ModelFragments.IPokemonName
+  public class Pokemon1 : global::Pokemon.GraphQL.ModelFragments.IPokemonName
   {
-    public String Name {get;}
-    public String Id {get;}
-    public String Number {get;}
-    public PokemonAttack1 Attacks {get;}
-    public System.Collections.Generic.List<Pokemon2> Evolutions {get;}
+    public String Name {get; set;}
+    public String Id {get; set;}
+    public String Number {get; set;}
+    public PokemonAttack1 Attacks {get; set;}
+    public System.Collections.Generic.List<Pokemon2> Evolutions {get; set;}
   }
   public class PokemonAttack1
   {
-    public System.Collections.Generic.List<Attack1> Special {get;}
+    public System.Collections.Generic.List<Attack1> Special {get; set;}
   }
   public class Attack1
   {
-    public String Name {get;}
-    public String Type {get;}
-    public Int64 Damage {get;}
+    public String Name {get; set;}
+    public String Type {get; set;}
+    public Int64 Damage {get; set;}
   }
   public class Pokemon2
   {
-    public String Id {get;}
-    public String Number {get;}
-    public String Name {get;}
-    public PokemonDimension Weight {get;}
-    public PokemonAttack2 Attacks {get;}
+    public String Id {get; set;}
+    public String Number {get; set;}
+    public String Name {get; set;}
+    public PokemonDimension Weight {get; set;}
+    public PokemonAttack2 Attacks {get; set;}
   }
   public class PokemonDimension
   {
-    public String Minimum {get;}
-    public String Maximum {get;}
+    public String Minimum {get; set;}
+    public String Maximum {get; set;}
   }
   public class PokemonAttack2
   {
-    public System.Collections.Generic.List<Attack2> Fast {get;}
+    public System.Collections.Generic.List<Attack2> Fast {get; set;}
   }
   public class Attack2
   {
-    public String Type {get;}
-    public Int64 Damage {get;}
+    public String Type {get; set;}
+    public Int64 Damage {get; set;}
   }
 }
 
@@ -64,11 +64,11 @@ namespace Pokemon.GraphQL.ModelOnlyName
 {
   public class Query
   {
-    public Pokemon Pokemon {get;}
+    public Pokemon Pokemon {get; set;}
   }
   public class Pokemon : global::Pokemon.GraphQL.ModelFragments.IPokemonName
   {
-    public String Name {get;}
+    public String Name {get; set;}
   }
 }
 

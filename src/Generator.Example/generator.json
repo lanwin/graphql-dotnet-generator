@@ -3,5 +3,6 @@
   "graphqlfile": "queries.graphql",
   "outputfile": "test.cs",
   "namespace": "Pokemon.GraphQL",
-  "clientName": "PokemonClient" 
+  "clientName": "PokemonClient",
+  "readOnly": false 
 }
