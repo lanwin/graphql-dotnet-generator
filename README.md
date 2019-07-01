@@ -6,9 +6,11 @@ Status: Prototype
 
 -----
 
-Given the schema https://github.com/lucasbento/graphql-pokemon/blob/master/schemas/schema.graphql
+Given the schema 
 
-Given the graphql query
+https://github.com/lucasbento/graphql-pokemon/blob/master/schemas/schema.graphql
+
+And given the graphql query
 
 ```
 fragment pokemonName on Pokemon {
@@ -61,3 +63,5 @@ Console.WriteLine(name.Name);
 * impl multiple queries files
 * impl schema from server
 
+#### Contributions
+If you want to contribute, you are highly welcome.
