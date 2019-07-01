@@ -1,0 +1,40 @@
+﻿
+fragment pokemonName on Pokemon {
+  name
+}
+
+{
+  pokemon(name: "Pikachu") {
+    id
+    number
+    ...pokemonName
+    attacks {
+      special {
+        name
+        type
+        damage
+      }
+    }
+    evolutions {
+      id
+      number
+      name
+      weight {
+        minimum
+        maximum
+      }
+      attacks {
+        fast {
+          type
+          damage
+        }
+      }
+    }
+  }
+}
+
+query OnlyName {
+  pokemon(name: "Pikachu") {
+    ...pokemonName
+  }
+}

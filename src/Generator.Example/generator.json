@@ -1,0 +1,7 @@
+﻿{
+  "schema": "schema.graphql",
+  "graphqlfile": "queries.graphql",
+  "outputfile": "test.cs",
+  "namespace": "Pokemon.GraphQL",
+  "clientName": "PokemonClient" 
+}

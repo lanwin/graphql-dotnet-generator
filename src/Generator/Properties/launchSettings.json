@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GraphQL-Generator": {
+      "commandName": "Project",
+      "workingDirectory": "../Generator.Example"
+    }
+  }
+}
