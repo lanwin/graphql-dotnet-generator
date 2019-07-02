@@ -10,12 +10,12 @@ namespace GraphQLGen.Sample
         static async Task Main(string[] args)
         {
             var client = new PokemonClient("https://graphql-pokemon.now.sh/graphql");
-            var data = await client.GetQuery();
+            var data = await client.Query();
 
             var name = (IPokemonName)data.Pokemon;
             Console.WriteLine(name.Name);
 
-            var data2 = await client.GetQueryGetPokemon(name.Name);
+            var data2 = await client.GetPokemon(name.Name);
             Console.WriteLine(data2.Pokemon.Name);
         }
     }

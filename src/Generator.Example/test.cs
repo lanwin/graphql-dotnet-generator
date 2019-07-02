@@ -90,7 +90,11 @@ namespace Pokemon.GraphQL
   public class PokemonClient
   {
     readonly GraphQLClient _client;
-    const string Query = @"
+    public PokemonClient(string url)
+    {
+      _client = new GraphQLClient(url);
+    }
+    const string QueryQuery = @"
       fragment pokemonName on Pokemon {
         name
       }
@@ -124,6 +128,15 @@ namespace Pokemon.GraphQL
         }
       }
     ";
+    public async Task<global::Pokemon.GraphQL.Model.Query> Query()
+    {
+      var response = await _client.PostAsync(new GraphQLRequest()
+      {
+        OperationName = "",
+        Query = QueryQuery
+      });
+      return ( (JObject)response.Data ).ToObject<global::Pokemon.GraphQL.Model.Query>();
+    }
     const string QueryGetPokemon = @"
       fragment pokemonName on Pokemon {
         name
@@ -135,27 +148,7 @@ namespace Pokemon.GraphQL
         }
       }
     ";
-    const string QueryGetPokemons = @"
-      query GetPokemons {
-        pokemons(first: 10) {
-          name
-        }
-      }
-    ";
-    public PokemonClient(string url)
-    {
-      _client = new GraphQLClient(url);
-    }
-    public async Task<global::Pokemon.GraphQL.Model.Query> GetQuery()
-    {
-      var response = await _client.PostAsync(new GraphQLRequest()
-      {
-        OperationName = "",
-        Query = Query
-      });
-      return ( (JObject)response.Data ).ToObject<global::Pokemon.GraphQL.Model.Query>();
-    }
-    public async Task<global::Pokemon.GraphQL.Model.GetPokemon.Query> GetQueryGetPokemon(String name)
+    public async Task<global::Pokemon.GraphQL.Model.GetPokemon.Query> GetPokemon(String name)
     {
       var response = await _client.PostAsync(new GraphQLRequest()
       {
@@ -165,7 +158,14 @@ namespace Pokemon.GraphQL
       });
       return ( (JObject)response.Data ).ToObject<global::Pokemon.GraphQL.Model.GetPokemon.Query>();
     }
-    public async Task<global::Pokemon.GraphQL.Model.GetPokemons.Query> GetQueryGetPokemons()
+    const string QueryGetPokemons = @"
+      query GetPokemons {
+        pokemons(first: 10) {
+          name
+        }
+      }
+    ";
+    public async Task<global::Pokemon.GraphQL.Model.GetPokemons.Query> GetPokemons()
     {
       var response = await _client.PostAsync(new GraphQLRequest()
       {

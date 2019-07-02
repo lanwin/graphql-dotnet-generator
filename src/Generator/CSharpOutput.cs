@@ -31,15 +31,6 @@ namespace GraphQLGen
 
         static void RenderClient(StringBuilder text, GenContext context)
         {
-            var operations = context.Namespaces.Select(ns => new
-            {
-                ns.Root,
-                Fragments = ns.UsedFragments,
-                VariableName = ("Query" + ns.Name).Replace(".", ""),
-                ns.Operation
-            }).ToArray();
-
-
             text.AppendLine();
             text.AppendLine("namespace " + context.Config.Namespace);
             text.AppendLine("{");
@@ -48,42 +39,42 @@ namespace GraphQLGen
             text.AppendLine("  {");
             text.AppendLine("    readonly GraphQLClient _client;");
 
-            foreach(var operation in operations)
-            {
-                text.AppendLine("    const string " + operation.VariableName + " = @\"");
-
-                foreach(var fragment in operation.Fragments)
-                {
-                    text.AppendLine("      " + AstPrinterExtended.Print(fragment.Node).Replace("\"", "\"\"").Replace("\n", Environment.NewLine + "      "));
-                }
-
-                text.AppendLine("      " + AstPrinterExtended.Print(operation.Operation).Replace("\"", "\"\"").Replace("\n", Environment.NewLine + "      "));
-                text.AppendLine("    \";");
-            }
-
             text.AppendLine("    public " + context.Config.ClientName + "(string url)");
             text.AppendLine("    {");
             text.AppendLine("      _client = new GraphQLClient(url);");
             text.AppendLine("    }");
 
-            foreach(var operation in operations)
+            foreach(var ns in context.Namespaces)
             {
-                var typeName = TypeReferenceName(context, operation.Root, true);
+                var name = (ns.Name ?? "Query").Replace(".", "");
+                var variableName = "Query" + UpperCaseFirst(name);
 
-                var variables = string.Join(", ", operation.Root.Varaibles.Select(v => LowerCaseFirst(v.Name)));
-                var variableDeclaration = string.Join(", ", operation.Root.Varaibles.Select(v => TypeReferenceName(context, v.Type) + " " + LowerCaseFirst(v.Name)));
+                text.AppendLine("    const string " + variableName + " = @\"");
 
-                text.AppendLine("    public async Task<" + typeName + "> Get" + operation.VariableName + "(" + variableDeclaration + ")");
+                foreach(var fragment in ns.UsedFragments)
+                {
+                    text.AppendLine("      " + AstPrinterExtended.Print(fragment.Node).Replace("\"", "\"\"").Replace("\n", Environment.NewLine + "      "));
+                }
+
+                text.AppendLine("      " + AstPrinterExtended.Print(ns.Operation).Replace("\"", "\"\"").Replace("\n", Environment.NewLine + "      "));
+                text.AppendLine("    \";");
+
+                var typeName = TypeReferenceName(context, ns.Root, true);
+
+                var variables = string.Join(", ", ns.Root.Varaibles.Select(v => LowerCaseFirst(v.Name)));
+                var variableDeclaration = string.Join(", ", ns.Root.Varaibles.Select(v => TypeReferenceName(context, v.Type) + " " + LowerCaseFirst(v.Name)));
+
+                text.AppendLine("    public async Task<" + typeName + "> " + name + "(" + variableDeclaration + ")");
                 text.AppendLine("    {");
                 text.AppendLine("      var response = await _client.PostAsync(new GraphQLRequest()");
                 text.AppendLine("      {");
-                text.AppendLine("        OperationName = \"" + operation.Operation.Name + "\",");
+                text.AppendLine("        OperationName = \"" + ns.Operation.Name + "\",");
 
                 if(variables.Length > 0)
                     text.AppendLine("        Variables = new {" + variables + "},");
 
 
-                text.AppendLine("        Query = " + operation.VariableName);
+                text.AppendLine("        Query = " + variableName);
                 text.AppendLine("      });");
                 text.AppendLine("      return ( (JObject)response.Data ).ToObject<" + typeName + ">();");
                 text.AppendLine("    }");
