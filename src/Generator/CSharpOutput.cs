@@ -139,13 +139,13 @@ namespace GraphQLGen
 
             foreach(var property in selectionSet.Fields)
             {
-                text.AppendLine("    " + TypeReferenceName(context, property.Reference) + " " + CamelCase(property.Name) + " "+ PropertyBody(context));
+                text.AppendLine("    " + TypeReferenceName(context, property.Reference) + " " + CamelCase(property.Name) + " " + PropertyBody(context));
             }
 
             text.AppendLine("  }");
         }
 
-        static string PropertyBody(GenContext context) 
+        static string PropertyBody(GenContext context)
             => context.Config.ReadOnly ? "{get;}" : "{get; set;}";
 
         static string CamelCase(string name) => char.ToUpperInvariant(name[0]) + name.Substring(1);
@@ -154,7 +154,7 @@ namespace GraphQLGen
         {
             var name = context.Config.Namespace + ".Model";
             if(!string.IsNullOrWhiteSpace(ns.Name))
-                name += ns.Name;
+                name += "." + ns.Name;
             return name;
         }
 
