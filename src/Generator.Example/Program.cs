@@ -12,6 +12,11 @@ namespace GraphQLGen.Sample
             var client = new PokemonClient("https://graphql-pokemon.now.sh/graphql");
             var data = await client.GetQuery();
 
+            var name = (IPokemonName)data.Pokemon;
+            Console.WriteLine(name.Name);
+
+            var data2 = await client.GetQueryGetPokemon(name.Name);
+            Console.WriteLine(data2.Pokemon.Name);
         }
     }
 }

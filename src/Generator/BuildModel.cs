@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 
@@ -25,12 +26,21 @@ namespace GraphQLGen
             var ns = new GenNamespace
             {
                 Operation = operation,
-                Name = operation.Name
+                Name = operation.Name,
+                Context = context
             };
 
-            var sharpType = ns.CreateSelectionSet(context.Schema.Query, context.Document);
-            Run(context, operation.SelectionSet, sharpType);
-            ns.Root = sharpType;
+            var rootSet = ns.CreateSelectionSet(context.Schema.Query, context.Document);
+            Run(context, operation.SelectionSet, rootSet);
+            ns.Root = rootSet;
+            
+            foreach(var variable in operation.Variables)
+            {
+                var name = variable.Type.Name();
+                var type = context.Schema.FindType(name);
+                var reference = ns.CreateReference(type, variable.NameNode);
+                rootSet.AddVariable(variable.Name, reference);
+            }
 
             context.Namespaces.Add(ns);
         }
@@ -44,24 +54,8 @@ namespace GraphQLGen
                     case Field field:
                         {
                             var fieldType = ((ObjectGraphType)selectionSet.GraphType).GetField(field.Name);
-
-                            IGenReference Unfold(IGraphType g)
-                            {
-                                switch(g)
-                                {
-                                    case GraphQLTypeReference reference:
-                                    return Unfold(context.Schema.FindType(reference.TypeName));
-                                    case NonNullGraphType nonNull:
-                                    return new GenNonNull(Unfold(nonNull.ResolvedType));
-                                    case ListGraphType list:
-                                    return new GenList(Unfold(list.ResolvedType));
-                                    default:
-                                    return selectionSet.Namespace.CreateSelectionSet(g, field);
-                                }
-
-                            }
-
-                            var propertyType = Unfold(fieldType.ResolvedType);
+                            
+                            var propertyType = selectionSet.Namespace.CreateReference(fieldType.ResolvedType, field);
                             selectionSet.AddField(field.Alias ?? field.Name, propertyType);
 
                             Run(context, field.SelectionSet, propertyType.GetSelectionSet());

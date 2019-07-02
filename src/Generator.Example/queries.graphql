@@ -33,8 +33,16 @@ fragment pokemonName on Pokemon {
   }
 }
 
-query OnlyName {
-  pokemon(name: "Pikachu") {
+query GetPokemon($name: String) {
+  pokemon(name: $name) {
+    id
     ...pokemonName
   }
 }
+
+query GetPokemons{
+  pokemons(first: 10){
+   name
+  }
+}
+

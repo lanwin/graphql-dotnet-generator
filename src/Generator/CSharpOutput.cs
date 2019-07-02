@@ -69,11 +69,20 @@ namespace GraphQLGen
             foreach(var operation in operations)
             {
                 var typeName = TypeReferenceName(context, operation.Root, true);
-                text.AppendLine("    public async Task<" + typeName + "> Get" + operation.VariableName + "()");
+
+                var variables = string.Join(", ", operation.Root.Varaibles.Select(v => LowerCaseFirst(v.Name)));
+                var variableDeclaration = string.Join(", ", operation.Root.Varaibles.Select(v => TypeReferenceName(context, v.Type) + " " + LowerCaseFirst(v.Name)));
+
+                text.AppendLine("    public async Task<" + typeName + "> Get" + operation.VariableName + "(" + variableDeclaration + ")");
                 text.AppendLine("    {");
                 text.AppendLine("      var response = await _client.PostAsync(new GraphQLRequest()");
                 text.AppendLine("      {");
                 text.AppendLine("        OperationName = \"" + operation.Operation.Name + "\",");
+
+                if(variables.Length > 0)
+                    text.AppendLine("        Variables = new {" + variables + "},");
+
+
                 text.AppendLine("        Query = " + operation.VariableName);
                 text.AppendLine("      });");
                 text.AppendLine("      return ( (JObject)response.Data ).ToObject<" + typeName + ">();");
@@ -120,13 +129,13 @@ namespace GraphQLGen
             {
                 foreach(var property in fragment.Fields)
                 {
-                    text.AppendLine("    public " + TypeReferenceName(context, property.Type) + " " + CamelCase(property.Name) + " " + PropertyBody(context));
+                    text.AppendLine("    public " + TypeReferenceName(context, property.Type) + " " + UpperCaseFirst(property.Name) + " " + PropertyBody(context));
                 }
             }
 
             foreach(var property in selectionSet.Fields)
             {
-                text.AppendLine("    public " + TypeReferenceName(context, property.Type) + " " + CamelCase(property.Name) + " " + PropertyBody(context));
+                text.AppendLine("    public " + TypeReferenceName(context, property.Type) + " " + UpperCaseFirst(property.Name) + " " + PropertyBody(context));
             }
 
             text.AppendLine("  }");
@@ -139,7 +148,7 @@ namespace GraphQLGen
 
             foreach(var property in selectionSet.Fields)
             {
-                text.AppendLine("    " + TypeReferenceName(context, property.Type) + " " + CamelCase(property.Name) + " " + PropertyBody(context));
+                text.AppendLine("    " + TypeReferenceName(context, property.Type) + " " + UpperCaseFirst(property.Name) + " " + PropertyBody(context));
             }
 
             text.AppendLine("  }");
@@ -148,7 +157,8 @@ namespace GraphQLGen
         static string PropertyBody(GenContext context)
             => context.Config.ReadOnly ? "{get;}" : "{get; set;}";
 
-        static string CamelCase(string name) => char.ToUpperInvariant(name[0]) + name.Substring(1);
+        static string UpperCaseFirst(string name) => char.ToUpperInvariant(name[0]) + name.Substring(1);
+        static string LowerCaseFirst(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
 
         static string NamespaceDeclarionName(GenContext context, GenNamespace ns)
         {
@@ -195,7 +205,7 @@ namespace GraphQLGen
             if(clrType != null)
                 name = ClrTypeFullName(clrType);
 
-            name = CamelCase(name);
+            name = UpperCaseFirst(name);
             return name;
         }
 

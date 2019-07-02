@@ -13,6 +13,7 @@ namespace GraphQLGen
         public GenNamespace Namespace { get; set; }
         public List<GenField> Fields { get; } = new List<GenField>();
         public List<GenSelectionSet> RefFragments { get; } = new List<GenSelectionSet>();
+        public List<GenVaraible> Varaibles { get; } = new List<GenVaraible>();
 
         public void AddField(string name, IGenReference reference)
         {
@@ -53,13 +54,17 @@ namespace GraphQLGen
                 }
             }
         }
-        
+
         public void AddFragment(GenSelectionSet fragment)
             => RefFragments.Add(fragment);
 
         public override string ToString()
             => Name;
 
-        public GenSelectionSet GetSelectionSet() => this;
+        public GenSelectionSet GetSelectionSet()
+            => this;
+
+        public void AddVariable(string name, IGenReference reference)
+            => Varaibles.Add(new GenVaraible() { Name = name, Type = reference });
     }
 }

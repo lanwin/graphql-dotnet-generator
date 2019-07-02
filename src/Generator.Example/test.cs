@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 using GraphQL.Common.Request;
 using System.Threading.Tasks;
 
-namespace Pokemon.GraphQL.ModelFragments
+namespace Pokemon.GraphQL.Model.Fragments
 {
   public interface IPokemonName
   {
@@ -18,7 +18,7 @@ namespace Pokemon.GraphQL.Model
   {
     public Pokemon1 Pokemon {get; set;}
   }
-  public class Pokemon1 : global::Pokemon.GraphQL.ModelFragments.IPokemonName
+  public class Pokemon1 : global::Pokemon.GraphQL.Model.Fragments.IPokemonName
   {
     public String Name {get; set;}
     public String Id {get; set;}
@@ -60,13 +60,26 @@ namespace Pokemon.GraphQL.Model
   }
 }
 
-namespace Pokemon.GraphQL.ModelOnlyName
+namespace Pokemon.GraphQL.Model.GetPokemon
 {
   public class Query
   {
     public Pokemon Pokemon {get; set;}
   }
-  public class Pokemon : global::Pokemon.GraphQL.ModelFragments.IPokemonName
+  public class Pokemon : global::Pokemon.GraphQL.Model.Fragments.IPokemonName
+  {
+    public String Name {get; set;}
+    public String Id {get; set;}
+  }
+}
+
+namespace Pokemon.GraphQL.Model.GetPokemons
+{
+  public class Query
+  {
+    public System.Collections.Generic.List<Pokemon> Pokemons {get; set;}
+  }
+  public class Pokemon
   {
     public String Name {get; set;}
   }
@@ -111,13 +124,21 @@ namespace Pokemon.GraphQL
         }
       }
     ";
-    const string QueryOnlyName = @"
+    const string QueryGetPokemon = @"
       fragment pokemonName on Pokemon {
         name
       }
-      query OnlyName {
-        pokemon(name: ""Pikachu"") {
+      query GetPokemon($name: String) {
+        pokemon(name: $name) {
+          id
           ... pokemonName
+        }
+      }
+    ";
+    const string QueryGetPokemons = @"
+      query GetPokemons {
+        pokemons(first: 10) {
+          name
         }
       }
     ";
@@ -134,14 +155,24 @@ namespace Pokemon.GraphQL
       });
       return ( (JObject)response.Data ).ToObject<global::Pokemon.GraphQL.Model.Query>();
     }
-    public async Task<global::Pokemon.GraphQL.ModelOnlyName.Query> GetQueryOnlyName()
+    public async Task<global::Pokemon.GraphQL.Model.GetPokemon.Query> GetQueryGetPokemon(String name)
     {
       var response = await _client.PostAsync(new GraphQLRequest()
       {
-        OperationName = "OnlyName",
-        Query = QueryOnlyName
+        OperationName = "GetPokemon",
+        Variables = new {name},
+        Query = QueryGetPokemon
       });
-      return ( (JObject)response.Data ).ToObject<global::Pokemon.GraphQL.ModelOnlyName.Query>();
+      return ( (JObject)response.Data ).ToObject<global::Pokemon.GraphQL.Model.GetPokemon.Query>();
+    }
+    public async Task<global::Pokemon.GraphQL.Model.GetPokemons.Query> GetQueryGetPokemons()
+    {
+      var response = await _client.PostAsync(new GraphQLRequest()
+      {
+        OperationName = "GetPokemons",
+        Query = QueryGetPokemons
+      });
+      return ( (JObject)response.Data ).ToObject<global::Pokemon.GraphQL.Model.GetPokemons.Query>();
     }
   }
 }
