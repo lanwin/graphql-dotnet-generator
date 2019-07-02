@@ -51,6 +51,7 @@ Console.WriteLine(name.Name);
 * possibly dotnet global tool
 * possibly support for https://github.com/prisma/graphql-config so vscode toolings works out of the box with graphql files
 * possibly format .cs files with dotnet format after generation
+* possibly msbuild task
 * get an official graphql-dotnet project
 
 #### What needs to be done before release
