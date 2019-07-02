@@ -90,3 +90,16 @@ type Query {
   pokemons(first: Int!): [Pokemon]
   pokemon(id: String, name: String): Pokemon
 }
+
+input Foo {
+  age: Int!
+}
+
+input PokemonInput {
+  name: String!
+  foo: Foo!
+}
+
+type Mutation {
+  addPokemon(input: PokemonInput): Pokemon
+}

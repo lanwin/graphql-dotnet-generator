@@ -65,6 +65,6 @@ namespace GraphQLGen
             => this;
 
         public void AddVariable(string name, IGenReference reference)
-            => Varaibles.Add(new GenVaraible() { Name = name, Type = reference });
+            => Varaibles.Add(new GenVaraible { Name = name, Type = reference });
     }
 }

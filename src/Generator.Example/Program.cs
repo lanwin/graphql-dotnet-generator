@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Pokemon.GraphQL;
+using Pokemon.GraphQL.Model.AddPokemon;
 using Pokemon.GraphQL.Model.Fragments;
 
 namespace GraphQLGen.Sample
@@ -17,6 +18,11 @@ namespace GraphQLGen.Sample
 
             var data2 = await client.GetPokemon(name.Name);
             Console.WriteLine(data2.Pokemon.Name);
+
+            await client.AddPokemon(new PokemonInput()
+            {
+
+            });
         }
     }
 }

@@ -85,6 +85,27 @@ namespace Pokemon.GraphQL.Model.GetPokemons
   }
 }
 
+namespace Pokemon.GraphQL.Model.AddPokemon
+{
+  public class Mutation
+  {
+    public Pokemon AddPokemon {get; set;}
+  }
+  public class Pokemon
+  {
+    public String Name {get; set;}
+  }
+  public class PokemonInput
+  {
+    public String Name {get; set;}
+    public Foo Foo {get; set;}
+  }
+  public class Foo
+  {
+    public Int64 Age {get; set;}
+  }
+}
+
 namespace Pokemon.GraphQL
 {
   public class PokemonClient
@@ -173,6 +194,23 @@ namespace Pokemon.GraphQL
         Query = QueryGetPokemons
       });
       return ( (JObject)response.Data ).ToObject<global::Pokemon.GraphQL.Model.GetPokemons.Query>();
+    }
+    const string QueryAddPokemon = @"
+      mutation AddPokemon($input: PokemonInput) {
+        addPokemon(input: $input) {
+          name
+        }
+      }
+    ";
+    public async Task<global::Pokemon.GraphQL.Model.AddPokemon.Mutation> AddPokemon(global::Pokemon.GraphQL.Model.AddPokemon.PokemonInput input)
+    {
+      var response = await _client.PostAsync(new GraphQLRequest()
+      {
+        OperationName = "AddPokemon",
+        Variables = new {input},
+        Query = QueryAddPokemon
+      });
+      return ( (JObject)response.Data ).ToObject<global::Pokemon.GraphQL.Model.AddPokemon.Mutation>();
     }
   }
 }

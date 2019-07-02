@@ -30,19 +30,39 @@ namespace GraphQLGen
                 Context = context
             };
 
-            var rootSet = ns.CreateSelectionSet(context.Schema.Query, context.Document);
+            var rootType = context.Schema.FindType(ns.Operation.OperationType.ToString());
+            var rootSet = ns.CreateSelectionSet(rootType, context.Document);
             Run(context, operation.SelectionSet, rootSet);
             ns.Root = rootSet;
-            
+
             foreach(var variable in operation.Variables)
             {
-                var name = variable.Type.Name();
-                var type = context.Schema.FindType(name);
-                var reference = ns.CreateReference(type, variable.NameNode);
+                var graphType = context.Schema.FindType(variable.Type.Name());
+                var reference = ns.CreateReference(graphType, variable.NameNode);
                 rootSet.AddVariable(variable.Name, reference);
+                Run(reference.GetSelectionSet());
             }
 
             context.Namespaces.Add(ns);
+        }
+
+        static void Run(GenSelectionSet set)
+        {
+            switch(set.GraphType)
+            {
+                case IComplexGraphType complexType:
+                    {
+                        foreach(var fieldType in complexType.Fields)
+                        {
+                            var fieldReference = set.Namespace.CreateReference(fieldType.ResolvedType, null);
+                            set.AddField(fieldType.Name, fieldReference);
+                            Run(fieldReference.GetSelectionSet());
+                        }
+                        break;
+                    }
+                default:
+                return;
+            }
         }
 
         static void Run(GenContext context, SelectionSet set, GenSelectionSet selectionSet)
@@ -54,7 +74,7 @@ namespace GraphQLGen
                     case Field field:
                         {
                             var fieldType = ((ObjectGraphType)selectionSet.GraphType).GetField(field.Name);
-                            
+
                             var propertyType = selectionSet.Namespace.CreateReference(fieldType.ResolvedType, field);
                             selectionSet.AddField(field.Alias ?? field.Name, propertyType);
 

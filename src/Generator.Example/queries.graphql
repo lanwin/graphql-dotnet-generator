@@ -46,3 +46,8 @@ query GetPokemons{
   }
 }
 
+mutation AddPokemon($input: PokemonInput) {
+  addPokemon(input: $input) {
+	name
+  }
+}
