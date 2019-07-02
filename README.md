@@ -59,7 +59,8 @@ Console.WriteLine(name.Name);
 * [x] impl queries
 * [ ] impl mutations
 * [x] impl arguments
-* [ ] error handling
+* [ ] client error handling
+* [ ] build time error reporting 
 * [ ] readOnly model
 * [ ] tests, tests, tests
 * [ ] impl dll output via Roslyn compiler so refactoring tools dont mess with the generated code
