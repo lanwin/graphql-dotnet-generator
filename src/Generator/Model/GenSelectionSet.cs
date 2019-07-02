@@ -5,16 +5,16 @@ using GraphQL.Types;
 
 namespace GraphQLGen
 {
-    class GenSelectionSet
+    class GenSelectionSet : IGenReference
     {
         public INode Node { get; set; }
         public IGraphType GraphType { get; set; }
         public string Name { get; set; }
         public GenNamespace Namespace { get; set; }
         public List<GenField> Fields { get; } = new List<GenField>();
-        public List<GenReference> RefFragments { get; } = new List<GenReference>();
+        public List<GenSelectionSet> RefFragments { get; } = new List<GenSelectionSet>();
 
-        public void AddField(string name, GenReference reference)
+        public void AddField(string name, IGenReference reference)
         {
             var existingField = Fields.Find(p => p.Name == name);
             if(existingField != null)
@@ -23,8 +23,8 @@ namespace GraphQLGen
             Fields.Add(new GenField
             {
                 Name = name,
-                SelectionSet = this,
-                Reference = reference
+                Parent = this,
+                Type = reference
             });
         }
 
@@ -55,18 +55,11 @@ namespace GraphQLGen
         }
         
         public void AddFragment(GenSelectionSet fragment)
-            => RefFragments.Add(new GenReference { SelectionSet = fragment });
+            => RefFragments.Add(fragment);
 
         public override string ToString()
             => Name;
 
-        public GenSelectionSet GetSelectionSet(IGraphType graphType, INode node)
-            => Namespace.GetSelectionSet(graphType, node);
-
-        public GenReference GetReference() =>
-            new GenReference
-            {
-                SelectionSet = this
-            };
+        public GenSelectionSet GetSelectionSet() => this;
     }
 }

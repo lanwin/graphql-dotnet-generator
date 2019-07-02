@@ -3,7 +3,7 @@
     class GenField
     {
         public string Name { get; set; }
-        public GenReference Reference { get; set; }
-        public GenSelectionSet SelectionSet { get; set; }
+        public IGenReference Type { get; set; }
+        public GenSelectionSet Parent { get; set; }
     }
 }

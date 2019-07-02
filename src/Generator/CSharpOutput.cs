@@ -54,7 +54,7 @@ namespace GraphQLGen
 
                 foreach(var fragment in operation.Fragments)
                 {
-                    text.AppendLine("      " + AstPrinterExtended.Print(fragment.SelectionSet.Node).Replace("\"", "\"\"").Replace("\n", Environment.NewLine + "      "));
+                    text.AppendLine("      " + AstPrinterExtended.Print(fragment.Node).Replace("\"", "\"\"").Replace("\n", Environment.NewLine + "      "));
                 }
 
                 text.AppendLine("      " + AstPrinterExtended.Print(operation.Operation).Replace("\"", "\"\"").Replace("\n", Environment.NewLine + "      "));
@@ -118,15 +118,15 @@ namespace GraphQLGen
 
             foreach(var fragment in selectionSet.RefFragments)
             {
-                foreach(var property in fragment.SelectionSet.Fields)
+                foreach(var property in fragment.Fields)
                 {
-                    text.AppendLine("    public " + TypeReferenceName(context, property.Reference) + " " + CamelCase(property.Name) + " " + PropertyBody(context));
+                    text.AppendLine("    public " + TypeReferenceName(context, property.Type) + " " + CamelCase(property.Name) + " " + PropertyBody(context));
                 }
             }
 
             foreach(var property in selectionSet.Fields)
             {
-                text.AppendLine("    public " + TypeReferenceName(context, property.Reference) + " " + CamelCase(property.Name) + " " + PropertyBody(context));
+                text.AppendLine("    public " + TypeReferenceName(context, property.Type) + " " + CamelCase(property.Name) + " " + PropertyBody(context));
             }
 
             text.AppendLine("  }");
@@ -139,7 +139,7 @@ namespace GraphQLGen
 
             foreach(var property in selectionSet.Fields)
             {
-                text.AppendLine("    " + TypeReferenceName(context, property.Reference) + " " + CamelCase(property.Name) + " " + PropertyBody(context));
+                text.AppendLine("    " + TypeReferenceName(context, property.Type) + " " + CamelCase(property.Name) + " " + PropertyBody(context));
             }
 
             text.AppendLine("  }");
@@ -158,17 +158,33 @@ namespace GraphQLGen
             return name;
         }
 
-        static string TypeReferenceName(GenContext context, GenReference reference, bool fullname = false)
+        static string TypeReferenceName(GenContext context, IGenReference reference, bool fullname = false)
         {
-            var name = TypeName(reference.SelectionSet);
+            switch(reference)
+            {
+                case GenSelectionSet set:
+                    {
+                        var name = TypeName(set);
 
-            if(fullname)
-                name = "global::" + NamespaceDeclarionName(context, reference.SelectionSet.Namespace) + "." + name;
+                        if(fullname)
+                            name = "global::" + NamespaceDeclarionName(context, set.Namespace) + "." + name;
 
-            if(reference.IsList)
-                name = ClrTypeFullName(typeof(List<>)) + "<" + name + ">";
+                        return name;
+                    }
 
-            return name;
+                case GenList list:
+                    {
+                        var element = TypeReferenceName(context, list.Element, fullname);
+                        return ClrTypeFullName(typeof(List<>)) + "<" + element + ">";
+                    }
+
+                case GenNonNull nonNull:
+                    {
+                        return TypeReferenceName(context, nonNull.Element, fullname);
+                    }
+                default:
+                throw new NotImplementedException(reference.GetType().FullName);
+            }
         }
 
         static string TypeName(GenSelectionSet selectionSet)

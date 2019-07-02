@@ -10,14 +10,14 @@ namespace GraphQLGen
         public string Name { get; set; }
         public List<GenSelectionSet> SelectionSets { get; } = new List<GenSelectionSet>();
         public Operation Operation { get; set; }
-        public GenReference Root { get; set; }
+        public GenSelectionSet Root { get; set; }
 
-        public IEnumerable<GenReference> UsedFragments
+        public IEnumerable<GenSelectionSet> UsedFragments
         {
-            get { return SelectionSets.SelectMany(t => t.RefFragments).GroupBy(g => g.SelectionSet).Select(s => s.First()); }
+            get { return SelectionSets.SelectMany(t => t.RefFragments).GroupBy(g => g).Select(s => s.First()); }
         }
 
-        public GenSelectionSet GetSelectionSet(IGraphType graphType, INode node)
+        public GenSelectionSet CreateSelectionSet(IGraphType graphType, INode node)
         {
             if(graphType == null)
                 return null;
