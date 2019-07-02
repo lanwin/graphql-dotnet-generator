@@ -62,7 +62,7 @@ namespace GraphQLGen
                 var typeName = TypeReferenceName(context, ns.Root, true);
 
                 var variables = string.Join(", ", ns.Root.Varaibles.Select(v => LowerCaseFirst(v.Name)));
-                var variableDeclaration = string.Join(", ", ns.Root.Varaibles.Select(v => TypeReferenceName(context, v.Type) + " " + LowerCaseFirst(v.Name)));
+                var variableDeclaration = string.Join(", ", ns.Root.Varaibles.Select(v => TypeReferenceName(context, v.Type, true) + " " + LowerCaseFirst(v.Name)));
 
                 text.AppendLine("    public async Task<" + typeName + "> " + name + "(" + variableDeclaration + ")");
                 text.AppendLine("    {");
@@ -167,6 +167,10 @@ namespace GraphQLGen
                     {
                         var name = TypeName(set);
 
+                        var clrType = GetClrType(set);
+                        if(clrType != null)
+                            return ClrTypeFullName(clrType);
+                        
                         if(fullname)
                             name = "global::" + NamespaceDeclarionName(context, set.Namespace) + "." + name;
 
@@ -191,11 +195,6 @@ namespace GraphQLGen
         static string TypeName(GenSelectionSet selectionSet)
         {
             var name = selectionSet.Name;
-
-            var clrType = GetClrType(selectionSet);
-            if(clrType != null)
-                name = ClrTypeFullName(clrType);
-
             name = UpperCaseFirst(name);
             return name;
         }
