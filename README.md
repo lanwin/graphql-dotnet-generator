@@ -55,13 +55,16 @@ Console.WriteLine(name.Name);
 
 #### What needs to be done before release
 
-* ensure the obj naming makes sens (is hard to change after release without breaking users)
-* impl mutations
-* impl arguments
-* tests, tests, tests
-* impl dll output via Roslyn compiler so refactoring tools dont mess with the generated code
-* impl multiple queries files
-* impl schema from server
+* [ ] ensure the obj naming makes sens (is hard to change after release without breaking users)
+* [x] impl queries
+* [ ] impl mutations
+* [x] impl arguments
+* [ ] error handling
+* [ ] readOnly model
+* [ ] tests, tests, tests
+* [ ] impl dll output via Roslyn compiler so refactoring tools dont mess with the generated code
+* [ ] impl multiple queries files
+* [ ] impl schema from server url
 
 #### Contributions
 If you want to contribute, you are highly welcome.
