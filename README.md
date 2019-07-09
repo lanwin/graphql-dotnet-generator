@@ -54,15 +54,22 @@ Console.WriteLine(name.Name);
 * possibly msbuild task
 * get an official graphql-dotnet project
 
-#### What needs to be done before release
+#### What needs to be done before beta
 
-* [ ] ensure the obj naming makes sens (is hard to change after release without breaking users)
 * [x] impl queries
-* [ ] impl mutations
+* [x] impl mutations
 * [x] impl arguments
 * [ ] client error handling
 * [ ] build time error reporting 
-* [ ] readOnly model
+* [ ] dotnet global tool
+
+#### What needs to be done before releaase
+
+* [ ] ensure the obj naming makes sens (is hard to change after release without breaking users)
+
+#### And after that
+
+* [ ] read only model
 * [ ] tests, tests, tests
 * [ ] impl dll output via Roslyn compiler so refactoring tools dont mess with the generated code
 * [ ] impl multiple queries files
